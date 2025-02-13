@@ -5367,7 +5367,7 @@ services:
     <<: *barnzilla_config
     source:
       <<: *barnzilla_source
-      targetRevision: HEAD
+      targetRevision: NOT_HEAD
     values:
       image:
         <<: *barnzilla_values_image
