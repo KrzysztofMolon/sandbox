@@ -27,11 +27,7 @@ barnzilla-config: &barnzilla_config
       # TODO: Once BAR and apiserver have auth enabled, we can remove this url override
       # and allow barnzilla to go through ambassador (which enables barnzilla->rits auth).
       rits:
-        url: "http://barney-rits.barney:8880"
-#   In case BARNZILLA_P4_SERVER is corrupt, we can override it here (globally)
-    environment:
-      - name: BARNZILLA_P4_SERVER
-        value: "p4-edge217:1666"
+        url: "http://barney-rats.barney:8880"
 
   clusters: &barnzilla_clusters
     infra: &barnzilla_infra
@@ -5276,10 +5272,6 @@ services:
       targetRevision: 93907118440a4f9addf1606bbf1be7a5f1e9b6b6
     values:
       <<: *barnzilla_values
-      config:
-        <<: *barnzilla_values_config
-        barnzilla:
-          url: http://barney-barnzilla-red.barney.svc.cluster.local.:8002
     clusters:
       <<: *barnzilla_clusters
       infra:
