@@ -22,5 +22,5 @@ jobs:
     - name: Generate helm chart for previous commit
       run: helm template helm > previous_chart.yaml
 
-    -name: Print the diff
+    - name: Print the diff
       run: diff previous_chart.yaml current_chart.yaml
