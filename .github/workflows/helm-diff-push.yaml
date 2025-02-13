@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Commit 0
-      run: echo ${{ github.event.commits[0] }}
+      run: echo ${{ github.event.commits[0][sha] }}
 
     - name: Commit 1
-      run: echo ${{ github.event.commits[1] }}
+      run: echo ${{ github.event.commits[1][sha] }}
 
     - name: Commit 2 
-      run: echo ${{ github.event.commits[2] }}
+      run: echo ${{ github.event.commits[2][sha] }}
