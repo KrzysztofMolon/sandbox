@@ -28,3 +28,6 @@ jobs:
 
     - name: Print the diff
       run: diff --unified=50 main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
+
+    - name: Commits
+      run: echo ${{ github.event.commits }}
