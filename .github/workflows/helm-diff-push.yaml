@@ -2,17 +2,24 @@ name: Generate helm chart on push
 
 on:
   push:
-    branches: [ main ]
+    branches: [ $default_branch ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Commit 0
-      run: echo ${{ github.event.commits[0][sha] }}
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
 
-    - name: Commit 1
-      run: echo ${{ github.event.commits[1][sha] }}
+    - name: Generate helm chart for main (post-push)
+      run: helm template helm > post_push_chart.yaml
 
-    - name: Commit 2 
-      run: echo ${{ github.event.commits[2][sha] }}
+    - name: Checkout to previous commit
+      run: git reset --hard HEAD~1
+
+    - name: Generate helm chart for main (pre-push)
+      run: helm template helm > pre_push_chart.yaml
+
+    - name: Print the diff
+      run: diff --unified=50 pre_push_chart.yaml post_push_chart.yaml || true
