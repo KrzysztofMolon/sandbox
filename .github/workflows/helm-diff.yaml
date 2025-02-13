@@ -27,7 +27,4 @@ jobs:
       run: helm template PR_HEAD/helm > PR_HEAD_chart.yaml
 
     - name: Print the diff
-      run: diff main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
-
-    - name: Do we even have python here?
-      run: python --version
+      run: diff --unified=50 main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
