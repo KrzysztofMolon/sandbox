@@ -16,14 +16,8 @@ jobs:
     - name: Generate helm chart for current commit
       run: helm template helm > current_chart.yaml
 
-    - name: Show me the log
-      run: git log
-
-    - name: Will it output anything?
-      run: ${{ github.event.before }}
-
-    - name: Switch to previous commit
-      run: git reset --hard HEAD~1
+    - name: Checkout to HEAD of main branch
+      run: git checkout ${{ github.event.before }}
 
     - name: Generate helm chart for previous commit
       run: helm template helm > previous_chart.yaml
