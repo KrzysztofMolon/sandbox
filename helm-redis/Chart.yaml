@@ -1,0 +1,10 @@
+apiVersion: v2
+name: barney-redis
+description: |
+  A redis failover for the barney ecosystem
+
+type: application
+
+version: 0.1.0
+
+appVersion: production

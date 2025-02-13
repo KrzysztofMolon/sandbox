@@ -1,0 +1,26 @@
+{{ range .Values.cronjob }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .name }}
+spec:
+  schedule: {{ .schedule }}
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: pg-cleanup
+            image: artifactory-barney-docker.infra.corp.arista.io/barney.ci/sqlviz:{{ .targetRevision }}
+            imagePullPolicy: IfNotPresent
+{{- with .env }}
+            env:
+{{ toYaml . | indent 12}}
+{{- end }}
+            command:
+              - /usr/bin/gc
+          restartPolicy: OnFailure
+---
+{{- end}}

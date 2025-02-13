@@ -1,0 +1,23 @@
+{
+	"version": 1,
+	"repomap": {
+		"barney.ci/alpine": {
+			"commit": "1f812eb95cb7652fb6449ea34135939cbde70f5a"
+		},
+		"barney.ci/barneyfile": {
+			"commit": "370d45e73577ff66e7db927a0abfb3f0bd12018f"
+		},
+		"barney.ci/golang": {
+			"commit": "7fcef2ce718cd722cff17258f17e47a771978500"
+		},
+		"barney.ci/model": {
+			"commit": "972fc6b652cd41498dcbbd9dbb88ea529a84b033"
+		},
+		"github.com/golang/go": {
+			"commit": "3901409b5d0fb7c85a3e6730a59943cc93b2835c"
+		},
+		"github.com/helm/helm": {
+			"commit": "c76dd9240f95b6e6c0dbad92932555f084d14eb3"
+		}
+	}
+}

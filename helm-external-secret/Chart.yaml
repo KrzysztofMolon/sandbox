@@ -1,0 +1,8 @@
+apiVersion: v2
+name: external-secret
+description: |
+  Definitions of all external secrets in use by Barney.
+
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

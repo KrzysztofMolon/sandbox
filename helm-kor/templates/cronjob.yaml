@@ -1,0 +1,39 @@
+{{- if .Values.cronJob.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kor.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}
+spec:
+  schedule: {{ .Values.cronJob.schedule }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "kor.labels" . | nindent 12 }}
+          name: {{ .Release.Name }}
+        spec:
+          serviceAccountName: {{ include "kor.serviceAccountName" . }}
+          containers:
+            - name: {{ .Release.Name }}-container
+              image: {{ .Values.cronJob.image.repository }}:{{ .Values.cronJob.image.tag }}
+              command:
+                {{- toYaml .Values.cronJob.command | nindent 16 }}
+              args:
+                {{- toYaml .Values.cronJob.args | nindent 16 }}
+              {{- if .Values.cronJob.env }}
+              env:
+                {{- toYaml .Values.cronJob.env | nindent 12 }}
+              {{- end }}
+          restartPolicy: {{ .Values.cronJob.restartPolicy }}
+  {{- if .Values.cronJob.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ .Values.cronJob.successfulJobsHistoryLimit }}
+  {{- end }}
+  {{- if .Values.cronJob.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
+  {{- end }}
+{{- end }}

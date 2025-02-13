@@ -1,0 +1,38 @@
+apiVersion: databases.spotahome.com/v1
+kind: RedisFailover
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  sentinel:
+    replicas: {{ .Values.replicas | default 3 }}
+    image: {{ .Values.image | default "redis:6.2.6-alpine" }}
+  {{- with .Values.secret }}
+  auth:
+    secretPath: {{ . }}
+  {{- end }}
+  {{- with .Values.bootstrap }}
+  bootstrapNode:
+    host: {{ . }}
+    allowSentinels: true
+  {{- end }}
+  redis:
+    replicas: {{ .Values.replicas | default 3 }}
+    image: {{ .Values.image | default "redis:6.2.6-alpine" }}
+    {{- with .Values.resources }}
+    resources: {{ toJson . }}
+    {{- end }}
+    exporter:
+      enabled: true
+      image: oliver006/redis_exporter:v1.54.0-alpine
+      {{- with .Values.secret }}
+      env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ . }}
+              key: password
+      {{- end  }}
+    {{- with .Values.customConfig }}
+    customConfig: {{ toJson . }}
+    {{- end }}

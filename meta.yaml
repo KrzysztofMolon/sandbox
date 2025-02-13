@@ -1,0 +1,23 @@
+reponame: code.arista.io/infra/barney/barney-ops
+epoch: 2
+description: |
+  Barney operations repository
+
+  Contains helm charts used by ArgoCD to deploy Barney at Arista.
+
+users:
+  maintainers:
+  - snaipe@arista.com
+  - mstory@arista.com
+  supervisor: kduda@arista.com
+
+x-bar:
+  version: beta
+
+x-github-bridge:
+  reviews:
+  - image: test
+    events:
+    - type: pull_request
+    - type: push
+      branch-re: ^(main|dev)$

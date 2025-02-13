@@ -1,0 +1,181 @@
+---
+# This service represents the (x86_64) deployment of bsy. It
+# selects all x86_64 bsy instances in the production set,
+# and will eventually be removed once the job coordinator is
+# in place.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/app: bsy
+    app.kubernetes.io/part-of: barney
+  name: bsy
+  namespace: '{{ $.Values.namespace }}'
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8181
+  selector:
+    app.kubernetes.io/app: bsy
+    beta.kubernetes.io/arch: amd64 # TODO: remove eventually; ask Snaipe
+    environment: production
+  sessionAffinity: None
+  type: ClusterIP
+---
+# TODO: remove eventually; ask Snaipe
+# This service is temporarily here to dispatch POST /job request to
+# the aarch64 deployment of bsy. It will be removed when the job coordinator
+# is in place.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/app: bsy
+    app.kubernetes.io/part-of: barney
+  name: bsy-aarch64
+  namespace: '{{ $.Values.namespace }}'
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8181
+  selector:
+    app.kubernetes.io/app: bsy
+    beta.kubernetes.io/arch: arm64
+    environment: production
+  sessionAffinity: None
+  type: ClusterIP
+---
+# This service represnets the HEAD instance of bsy running on x86_64. It
+# potentially matches against multiple applications which represent
+# the HEAD instance of bsy running with different configurations.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/app: bsy
+    app.kubernetes.io/part-of: barney
+  name: barney-bsy-head
+  namespace: '{{ $.Values.namespace }}'
+  annotations:
+    getambassador.io/config: |
+      apiVersion: getambassador.io/v2
+      kind: Mapping
+      name: barney-bsy-head-combined_direct_http_mapping
+      ambassador_id: [ internal_proxy ]
+      bypass_auth: true
+      host: barney-bsy-head.infra.corp.arista.io
+      timeout_ms: 36000000
+      idle_timeout_ms: 36000000
+      prefix: /
+      service: barney-bsy-head.barney:8181
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8181
+  selector:
+    app.kubernetes.io/app: bsy
+    beta.kubernetes.io/arch: amd64
+    head-like: "true"
+  sessionAffinity: None
+  type: ClusterIP
+---
+# This service represents the cache service and selects all
+# bsy instances in the production set across architectures.
+#
+# NOTE: this is going to go away, because the cache service is turning
+# into a first-class service, defined in
+# barney.ci/barney:helm/cache/templates/service.yaml.  -kduda 2024-07-11
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/app: bsy
+    app.kubernetes.io/part-of: barney
+  name: '{{ $.Values.name }}-cache'
+  namespace: '{{ $.Values.namespace }}'
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8181
+  selector:
+    app.kubernetes.io/app: bsy
+    environment: production
+  sessionAffinity: None
+  type: ClusterIP
+---
+# This service represents barnzilla service and selects all
+# barnzilla instances in the production set across versions.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/app: barnzilla
+    app.kubernetes.io/part-of: barney
+  name: barnzilla-bsy-worker
+  namespace: '{{ $.Values.namespace }}'
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8002
+  selector:
+    app.kubernetes.io/name: barnzilla
+    environment: production
+  sessionAffinity: None
+  type: ClusterIP
+---
+# This service represents barney-cache and selects all
+# barney-cache instances in the production set across versions.
+# Note that initially we will have barney-cache-head and barney-cache-blue
+# participating in the barney-cache service, but eventually we would
+# mostly have a barney-cache-blue and barney-cache-green.
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/app: cache
+    app.kubernetes.io/name: barney-cache-service
+    app.kubernetes.io/part-of: barney
+  name: barney-cache-service
+  namespace: '{{ $.Values.namespace }}'
+spec:
+  clusterIP: None
+  clusterIPs:
+  - None
+  ports:
+  - name: http
+    port: 8183
+    protocol: TCP
+    targetPort: 8184
+  selector:
+    app.kubernetes.io/app: cache
+    app.kubernetes.io/component: cache-service
+    app.kubernetes.io/part-of: barney
+  sessionAffinity: None
+  type: ClusterIP
+---
+# This service represents barney-cache and selects all

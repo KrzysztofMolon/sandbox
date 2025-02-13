@@ -1,0 +1,51 @@
+# Bootstrap the barney project definition as well as the barney root application.
+# This only need to be applied once.
+#
+# To use, simply run `kubectl apply -f bootstrap.yaml`.
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: &name barney
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  description: Barney Ecosystem
+  destinations:
+  - namespace: barney
+    server: '*'
+  - namespace: barney-bar
+    server: '*'
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+  - namespace: bus*
+    server: '*'
+  - name: '*'
+    namespace: gerrit
+    server: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  sourceRepos:
+  - '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: &name barney
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    name: in-cluster
+    namespace: argocd
+  project: *name
+  source:
+    path: helm
+    repoURL: https://github.com/aristanetworks/barney-ops
+    targetRevision: main
+  syncPolicy:
+    automated: {}

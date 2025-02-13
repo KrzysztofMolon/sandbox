@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "repocleaner.fullname" . }}
+  namespace: gerrit
+  annotations:
+    maintainer: barney-dev
+spec:
+  schedule: {{ .Values.schedule }}
+  # Only keep around the latest failed pod and successful one; keeps the gerrit
+  # namespace tidy
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            maintainer: barney-dev
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: prune
+            image: bitnami/kubectl:1.25.12
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "250m"
+              limits:
+                memory: "1024Mi"
+                cpu: "500m"
+            args:
+            - exec
+            - {{ .Values.app.targetPod }}
+            - --
+            - bash
+            - -xeuc
+            - |
+                git -C /var/gerrit/git/{{ .Values.app.gitRepo }} for-each-ref \
+                --sort='committerdate' \
+                --format='%(committerdate:unix) %(refname) %(committerdate)' \
+                {{- range .Values.app.refs }}
+                {{ . }} \
+                {{- end }}
+                | {
+                while read committerdate ref hdate; do
+                    if [[ $committerdate -lt $(date +%s --date='{{ .Values.app.deleteOlderThan }}') ]]
+                    then
+                      echo "delete $ref"
+                      {{- .Values.app.extraCommands | trim | nindent 22 }}
+                    fi
+                done
+                } | git -C /var/gerrit/git/{{ .Values.app.gitRepo }} update-ref --stdin
+                git -C /var/gerrit/git/{{ .Values.app.gitRepo }} gc --aggressive
+                git -C /var/gerrit/git/{{ .Values.app.gitRepo }} fsck

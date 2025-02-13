@@ -1,0 +1,10 @@
+apiVersion: v2
+name: barney-kafka
+description: |
+  A kafka cluster for the Barney ecosystem.
+
+type: application
+
+version: 0.1.0
+
+appVersion: production

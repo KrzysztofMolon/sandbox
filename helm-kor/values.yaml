@@ -1,0 +1,37 @@
+cronJob:
+  enabled: true
+  name: barney-kor
+  namespace: barney
+  schedule: "0 1 * * 1"
+  image:
+    repository: yonahdissen/kor
+    tag: latest
+  # e.g. kor configmap --include-namespaces default,other-ns
+  command:
+    - kor
+  args:
+    - "configmap"
+    - "--include-namespaces=barney"
+    - "--include-labels"
+    - "app.kubernetes.io/app=bsy"
+    - "--older-than=1h"
+    - "--delete"
+    - "--no-interactive"
+  restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+
+prometheusExporter:
+  enabled: false
+
+# -- Custom labels to add into metadata
+additionalLabels: {}
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  name: "barney-kor"

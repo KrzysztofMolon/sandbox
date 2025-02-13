@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+org_members=($(gh api --paginate -X GET 'orgs/aristanetworks/members' \
+	| jq '.[].login' | cut -d'"' -f2))
+
+team_members=($(gh api --paginate -X GET '/orgs/aristanetworks/teams/b5-exporters/members' \
+	| jq '.[].login' | cut -d'"' -f2))
+
+declare -A org
+for org_member in "${org_members[@]}" ; do
+	org["$org_member"]=1
+done
+
+declare -A team
+for team_member in "${team_members[@]}" ; do
+	team[$team_member]=1
+done
+
+for team_member in "${team_members[@]}" ; do
+	if [[ -z ${org["${team_member}"]:-} ]] ; then
+		echo "team member $team_member left org"
+		(set -x; gh api -X DELETE "/orgs/aristanetworks/teams/b5-exporters/memberships/${team_member}") ||:
+	fi
+done
+
+for org_member in "${org_members[@]}" ; do
+	if [[ "$org_member" = "vzxv" ]] ; then
+		continue # don't bork the admin
+	fi
+	if [[ -z ${team["${org_member}"]:-} ]] ; then
+		echo "org member $org_member needs to be added to team"
+		(set -x; gh api -X PUT "/orgs/aristanetworks/teams/b5-exporters/memberships/${org_member}") ||:
+	fi
+done

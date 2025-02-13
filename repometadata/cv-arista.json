@@ -1,0 +1,54 @@
+{
+    "Reponame": "code.arista.io/cv/arista",
+    "Description": "alias for arista.git, which is where CVP is homed for ova builds.\n This repometadata is maintained by hand\n",
+    "Labels": {
+        "archived": "false",
+        "barneycontext.version": "0",
+        "bug": "bb/794076",
+        "content.barneyyaml": "true",
+        "content.go_module": "true",
+        "gerrit.instance": "baremetal gerrit",
+        "gerrit.project_name": "arista",
+        "gerrit.state": "ACTIVE",
+        "gerrit.url": "https://gerrit.corp.arista.io",
+        "gerrit.web_links.gitiles": "https://gerrit.corp.arista.io/plugins/gitiles/arista",
+        "url.browse": "https://gerrit.corp.arista.io/plugins/gitiles/arista",
+        "url.browse-commit-template": "https://gerrit.corp.arista.io/plugins/gitiles/arista/+/${COMMIT}",
+        "url.browse-diff-template": "https://gerrit.corp.arista.io/plugins/gitiles/arista/+/${COMMITA}..${COMMITB}",
+        "url.browse-log-template": "https://gerrit.corp.arista.io/plugins/gitiles/arista/+log/${COMMITA}..${COMMITB}",
+        "url.browse-review-template": "https://gerrit.corp.arista.io/c/arista/+/${REVIEW_NUMBER}"
+    },
+    "URL": {
+        "Anon": "https://gerrit.corp.arista.io/arista",
+        "Auth": "ssh://gerrit.corp.arista.io:29418/arista"
+    },
+    "Users": {
+        "Maintainers": [
+            "tsuna@arista.com",
+            "aaronb@arista.com",
+            "rski@arista.com"
+        ],
+        "Supervisor": "",
+        "Watchers": [
+            "rjian@arista.com",
+            "anthonyli@arista.com"
+        ]
+    },
+    "x-rits": {
+        "bip-packages": [
+            "ova-BIP",
+            "CvpTest"
+        ],
+        "branch-project-mapping": [
+            {
+                "git-branch": "master",
+                "p4-project": "ova-main"
+            }
+        ],
+        "exclude-branch-pattern": "oslo|rio|uppsala|xian",
+        "instance": "production",
+        "required-for-merge": {
+            "gerrit-checks-query": "status:open ((((path:^aeris/cmd/turbine/main.go) OR (path:^docker-tar-template-vars.json) OR (path:^Makefile) OR (path:^cvp/app/changecontrol/.*) OR (path:^helm/onprem/.*) OR (path:^cvp/dist.Jenkinsfile) OR ((path:^cvp/java-backend/.* OR path:^cvp/cmd/.* OR path:^aeris/clickhouse/cmd/.* OR path:^service/cmd/.* OR path:^clover/cmd/.* OR path:^cmd/Collector/.* OR path:^aeris/cmd/load-checker/.* OR path:^aeris/cmd/gencert/.* OR path:^aeris/cmd/turbine/.* OR path:^aeris/cmd/bugalerts/.* OR path:^aeris/cmd/aeris/.*) AND (path:^.*Dockerfile OR path:^.*Makefile)) OR ((path:^aeris/.* OR path:^cvp/cmd/cvp-metrics/.* OR path:^zookeeper/.* OR path:^cmd/GNMIAdapter/.* OR path:^cmd/keysdump/.* OR path:^aeris/service/.* OR path:^resources/server/secret/vault/aeris/tool/.*) AND path:^.*Makefile)) AND branch:master) OR branch:cvp.salton OR ((path:^CvpTest/.*) AND (branch:master OR branch:cvp.rivers OR branch:cvp.quail OR branch:cvp.prosser))) AND -footer:{skip-RITS=true}"
+        }
+    }
+}

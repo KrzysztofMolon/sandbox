@@ -1,0 +1,39 @@
+#!/bin/sh -eu
+#
+# Usage: find-trace-by-job <job id>
+
+JAEGER_URL=https://jaeger.infra.corp.arista.io/trace
+ELASTIC_URL=https://elasticsearch.infra.corp.arista.io
+
+id=$1; shift
+
+cat <<'EOF' \
+  | jq -nc --arg jobid "$id" -f /proc/self/fd/0 \
+  | curl -L -sS \
+      -H 'Content-Type: application/json' \
+      --data-binary @- \
+      "$ELASTIC_URL"/'jaeger-span-*/_search' \
+  | jq --arg url "$JAEGER_URL" '.hits.hits[] | ._source | ($url + "/" + .traceID + "?uiFind=" + .spanID)' -r
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "process.serviceName": "barney-bsy." } },
+        {
+          "nested": {
+            "path": "logs.fields",
+            "query": {
+              "bool": {
+                "must": [
+                  { "match": { "logs.fields.key": "job" } },
+                  { "match": { "logs.fields.value": ($jobid) } }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+EOF

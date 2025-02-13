@@ -1,0 +1,256 @@
+images:
+  bus:
+    units:
+      - image: barney.ci/alpine%bus
+      - image: github.com/helm/helm%static
+        
+  helm-floor:
+    units:
+      - image: barney.ci/alpine%pkg/alpine-base
+      - image: github.com/helm/helm%static
+      - image: barney.ci/alpine%apk-finalizers
+
+  test/helm:
+    units:
+      - floor: .%helm-floor
+        build: helm template --debug helm helm
+      - floor: .%helm-floor
+        build: helm template --debug helm-external-secret helm-external-secret
+      - floor: .%helm-floor
+        build: helm template --debug helm-kafka helm-kafka
+      - floor: .%helm-floor
+        build: helm template --debug helm-oomkiller helm-oomkiller
+      - floor: .%helm-floor
+        build: helm template --debug helm-postgres helm-postgres
+      - floor: .%helm-floor
+        build: helm template --debug helm-redis helm-redis
+
+
+  shellcheck-floor:
+    units:
+      - image: barney.ci/alpine%pkg/alpine-base
+      - image: barney.ci/alpine%pkg/shellcheck
+      - image: barney.ci/alpine%apk-finalizers
+
+  test/shellcheck:
+    units:
+      - floor: .%shellcheck-floor
+        build: shellcheck ./repometadata/*.sh
+
+roll-policy:
+  # Add these repos to the repomap if not already there
+  force-incoming-repos:
+    - repo: barney.ci/barneyfile
+
+  # Repos in a set will rolled in tandem. This is generally
+  # useful for repos that are often in the same topic.
+  # Roll sets will add new repomap entries.
+  roll-sets:
+    # bst is failing to roll due to setcap missing from the build floor
+    # This is fixed in the latest barney.ci/bst so roll these two
+    # together.
+    - - repo: barney.ci/bst
+      - repo: github.com/aristanetworks/bst
+
+    # byob contains the tools that barnzilla uses to extract content from
+    # RPMs in order to overlay them. Older versions of these tools were
+    # tighly coupled and required co-rolling although newer versions have
+    # been more independent.
+    - - repo: code.arista.io/infra/barney/barnzilla
+      - repo: barney.ci/byob
+
+  # Roll groups will not add new repomap entries.
+  roll-groups:
+    # A recent breaking change requires both to roll at the same time
+    # https://github.com/barney-ci/model/pull/175
+    - - repo: barney.ci/model
+      - repo: barney.ci/barney
+      - repo: barney.ci/client
+
+  # When determining what refs to roll for an incoming repo, only the
+  # first matching entry in the incoming-repos list is considered.
+  incoming-repos:
+    # Roll a stable release branch from a4c.
+    - "code.arista.io/tools/a4c": 
+      - from: release
+        to: main
+      - from: release
+        to: eos-trunk
+      
+    - "code.arista.io/eos/eext/openssl3-fips": []
+      # We must only roll FIPS 140 certified versions of this repo. For now,
+      # disable automated deployments and let the owners of this repo roll
+      # by hand.
+
+    # Roll the trunk branch of event-viewer.
+    - "code.arista.io/cv/event-viewer": 
+      - from: trunk
+        to: master
+      - from: trunk
+        to: main
+      - from: trunk
+        to: eos-trunk
+      - from-matching-branch: true
+
+    - "arista.com/**": &default
+      # The default roll policy for all remaining repos is to roll any
+      # branch whose name matches the primary branch. E.g., a branch
+      # named 'seattle-rel' will roll into a primary called 'seattle-rel'.
+      - from-matching-branch: true
+      # If no matching branch found, [ main, eos-trunk, master ] should all
+      # roll into each-other.
+
+      # main <-> eos-trunk
+      - from: main
+        to: eos-trunk
+      - from: eos-trunk
+        to: main
+
+      # main <-> master
+      - from: main
+        to: master
+      - from: master
+        to: main
+
+      # master <-> eos-trunk
+      - from: eos-trunk
+        to: master
+      - from: master
+        to: eos-trunk
+
+      # trunk <-> eos-trunk
+      - from: eos-trunk
+        to: trunk
+      - from: trunk
+        to: eos-trunk
+
+      # trunk <-> main
+      - from: main
+        to: trunk
+      - from: trunk
+        to: main
+
+      # trunk <-> master
+      - from: trunk
+        to: master
+      - from: master
+        to: trunk
+
+    - "barney.ci/client":
+      - from-re: "release/v*.*.*"
+        to: main
+        sort-func: semver
+      - from-re: "release/v*.*.*"
+        to: eos-trunk
+        sort-func: semver
+      - from-re: "release/v*.*.*"
+        to: master
+        sort-func: semver
+      - from-re: "release/v*.*.*"
+        to: trunk
+        sort-func: semver
+
+    - "barney.ci/**": *default
+    - "gerrit.corp.arista.io/**": *default
+    - "gitlab.aristanetworks.com/**": *default
+    - "github.com/aristanetworks/*": *default
+    - "code.arista.io/**": *default
+    - "github.com/untangle/*": *default
+    - "github.com/openconfig/featureprofiles": *default
+
+    - "git.sr.ht/~sircmpwn/scdoc":
+      - from-tag: "1.11.1"
+        to: main
+      - from-tag: "1.11.1"
+        to: eos-trunk
+      - from-tag: "1.11.1"
+        to: master
+      - from-tag: "1.11.1"
+        to: trunk
+
+    - "github.com/golang/go":
+      - from-tag: "go*.*.*"
+        to: main
+        sort-func: semver
+      - from-tag: "go*.*.*"
+        to: eos-trunk
+        sort-func: semver
+      - from-tag: "go*.*.*"
+        to: master
+        sort-func: semver
+      - from-tag: "go*.*.*"
+        to: trunk
+        sort-func: semver
+
+    - "github.com/hashicorp/go-hclog":
+      - from-tag: "v0.16.0"
+        to: main
+      - from-tag: "v0.16.0"
+        to: eos-trunk
+      - from-tag: "v0.16.0"
+        to: master
+      - from-tag: "v0.16.0"
+        to: trunk
+
+    - "github.com/swagger-api/swagger-ui":
+      - from-tag: "v3.47.0"
+        to: main
+      - from-tag: "v3.47.0"
+        to: eos-trunk
+      - from-tag: "v3.47.0"
+        to: master
+      - from-tag: "v3.47.0"
+        to: trunk
+
+    - "github.com/goreleaser/nfpm":
+      - from-tag: "v2.26.0"
+        to: main
+      - from-tag: "v2.26.0"
+        to: eos-trunk
+      - from-tag: "v2.26.0"
+        to: master
+      - from-tag: "v2.26.0"
+        to: trunk
+
+    - "github.com/alecthomas/kong":
+      - from-tag: "v0.9.0"
+        to: main
+      - from-tag: "v0.9.0"
+        to: eos-trunk
+      - from-tag: "v0.9.0"
+        to: master
+      - from-tag: "v0.9.0"
+        to: trunk
+
+    - "github.com/golangci/golangci-lint":
+      - from-tag: "v*.*.*"
+        to: main
+        sort-func: semver
+      - from-tag: "v*.*.*"
+        to: eos-trunk
+        sort-func: semver
+      - from-tag: "v*.*.*"
+        to: master
+        sort-func: semver
+      - from-tag: "v*.*.*"
+        to: trunk
+        sort-func: semver
+
+    - "github.com/nodejs/node":
+      - from-tag: "v22.*.*"
+        to: main
+        sort-func: semver
+      - from-tag: "v22.*.*"
+        to: master
+        sort-func: semver
+      - from-tag: "v22.*.*"
+        to: eos-trunk
+        sort-func: semver
+      - from-tag: "v22.*.*"
+        to: trunk
+        sort-func: semver
+
+    - "**":
+      # The default roll policy for all remaining repos is to not roll at all.
+      # We will need to come up with a way to mitigate the supply-chain attack
+      # (at least) before this can be enabled.

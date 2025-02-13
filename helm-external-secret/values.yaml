@@ -1,0 +1,15 @@
+arvault:
+  secretRef:
+    secretAccessKeySecretRef:
+      key: secret-access-credentials
+      name: eso-gcpsm-sa-key-barney-default-secret
+      namespace: external-secrets-manager
+
+secrets: {}
+  #name-of-secret:
+  #  data:
+  #  - secretKey: someKey
+  #    remoteRef:
+  #      key: someGCPSecretName
+  #  secret:
+  #    THE_SECRET: '{{ .someKey | toString }}'

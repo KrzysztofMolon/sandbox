@@ -1,0 +1,53 @@
+.\" Copyright (c) 2022 Arista Networks, Inc.  All rights reserved.
+.\" Arista Networks, Inc. Confidential and Proprietary.
+.Dd October 7, 2022
+.Dt BARNEYPING 1
+.Os Arista Barney Ops
+.Sh NAME
+.Nm barneyping
+.Nd check the aliveness of Barney via bsy-compat
+.Sh SYNOPSIS
+.Nm
+(
+.Cm prod | head | host= Ns Ar host
+)
+.Nm
+.Cm help
+.Sh DESCRIPTION
+The
+.Nm
+utility creates a Barney job using a bsy-compat endpoint,
+waits for the job to complete, asks for the snapshot result of
+the job, and verifies that this result is a
+.Xr tar 1
+stream.
+The message "OK!" is printed only when this sequence is succeessful.
+.Pp
+The command takes one mandatory parameter, which decides
+the bsy-compat endpoint to be used. For
+.Cm prod
+the hostname "bsy" is used; for
+.Cm head
+the hostname "bsy-head" is used; for the invocation
+.Cm host= Ns Ar host ,
+the literal hostname specified by
+.Ns Ar host
+is used. In every case, the hostname is automatically appended with
+"infra.corp.arista.io".
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLE
+.Pp
+.nf
+$ barneyping head
+job J072616efb061c... submitted
+job J072616efb061c... running
+job J072616efb061c... passed
+/dev/stdin: POSIX tar archive
+OK!
+.Sh ENVIRONMENT
+The
+.Ev DEBUG
+environment variable, when set to a non-empty string, causes
+.Nm
+to print HTTP request and response headers, and additional JSON output.

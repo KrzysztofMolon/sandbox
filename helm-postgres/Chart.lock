@@ -1,0 +1,6 @@
+dependencies:
+- name: prometheus-postgres-exporter
+  repository: ""
+  version: 4.1.0
+digest: sha256:1977debb6622743573c7ab4abc1b407a1631c30307b7233333dd830e8c7b7c50
+generated: "2024-07-04T11:12:27.86665449+01:00"

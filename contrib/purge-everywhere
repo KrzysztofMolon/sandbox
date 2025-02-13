@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -x
+
+for pod in barney-bsy-{0..28}; do
+    kubectl -n barney exec -it "${pod}" -- b5-worker cache purge c8473bb2c18e4fc9371ba0f4a3e95340cdacad802173d21ab1e243670e885862;
+done

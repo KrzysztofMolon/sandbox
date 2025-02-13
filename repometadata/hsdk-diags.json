@@ -1,0 +1,53 @@
+{
+  "Reponame": "code.arista.io/brcm/hsdk-diags",
+  "Description": "Un-linked alias for code.arista.io/brcm/hsdk. Contains definitions for doing diags on multiple versions of hsdk. This content resides in the `main-diags` branch of the main code.arista.io/brcm/hsdk repo.",
+  "Labels": {
+	"archived": "false",
+	"barneycontext.version": "0",
+	"content.barneyyaml": "true",
+	"github.archived": "false",
+	"github.default_branch": "main",
+	"github.fork": "false",
+	"github.full_name": "aristanetworks/hsdk",
+	"github.name": "hsdk",
+	"github.owner.login": "aristanetworks",
+	"github.private": "true",
+	"github.url": "https://api.github.com/repos/aristanetworks/hsdk",
+	"url.browse": "https://github.com/aristanetworks/hsdk/tree/main-diags",
+	"url.browse-commit-template": "https://github.com/aristanetworks/hsdk/commit/${COMMIT}",
+	"url.browse-diff-template": "https://github.com/aristanetworks/hsdk/compare/${COMMITA}...${COMMITB}",
+	"url.browse-log-template": "https://github.com/aristanetworks/hsdk/compare/${COMMITA}...${COMMITB}",
+	"url.browse-review-template": "https://github.com/aristanetworks/hsdk/pull/${REVIEW_NUMBER}"
+  },
+  "URL": {
+    "Anon": "https://github.com/aristanetworks/hsdk.git",
+    "Auth": "git@github.com:aristanetworks/hsdk.git"
+  },
+  "Users": {
+	"Maintainers": [
+	  "kfrancis@arista.com",
+	  "aiswaryap@arista.com",
+	  "supadhyay@arista.com",
+	  "mihirjichkar@arista.com"
+	],
+	"Supervisor": "ajay@arista.com",
+	"Watchers": [
+	  "imanpreet@arista.com"
+	]
+  },
+  "x-rits": {
+    "bip-packages": [
+      "StrataHsdkDiags"
+    ],
+    "branch-project-mapping": [
+      {
+        "git-branch": "main-diags",
+        "p4-project": "eos-trunk"
+      }
+    ],
+    "exclude-branch-pattern": ".*",
+    "include-branch-pattern": "^main-diags$",
+    "instance": "production",
+    "required-for-merge": {}
+  }
+}

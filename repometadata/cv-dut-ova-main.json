@@ -1,0 +1,34 @@
+{
+    "Reponame": "code.arista.io/cv/cv-dut-ova-main",
+    "Description": "alias for cv-dut.git, this is used in ova-main for Cvp dut packages.\n This repometadata is maintained by hand\n",
+    "Labels": {
+        "archived": "false",
+        "barneycontext.version": "0",
+        "content.barneyyaml": "true",
+        "gerrit.instance": "baremetal gerrit",
+        "gerrit.project_name": "cv-dut",
+        "gerrit.state": "ACTIVE",
+        "gerrit.url": "https://gerrit.corp.arista.io",
+        "gerrit.web_links.gitiles": "https://gerrit.corp.arista.io/plugins/gitiles/cv-dut",
+        "url.browse": "https://gerrit.corp.arista.io/plugins/gitiles/cv-dut",
+        "url.browse-commit-template": "https://gerrit.corp.arista.io/plugins/gitiles/cv-dut/+/${COMMIT}",
+        "url.browse-diff-template": "https://gerrit.corp.arista.io/plugins/gitiles/cv-dut/+/${COMMITA}..${COMMITB}",
+        "url.browse-log-template": "https://gerrit.corp.arista.io/plugins/gitiles/cv-dut/+log/${COMMITA}..${COMMITB}",
+        "url.browse-review-template": "https://gerrit.corp.arista.io/c/cv-dut/+/${REVIEW_NUMBER}"
+    },
+    "URL": {
+        "Anon": "https://gerrit.corp.arista.io/cv-dut",
+        "Auth": "ssh://gerrit.corp.arista.io:29418/cv-dut"
+    },
+    "Users": {
+        "Maintainers": [
+            "rjian@arista.com",
+            "anthonyli@arista.com"
+        ],
+        "Supervisor": "rjian@arista.com",
+        "Watchers": [
+            "rjian@arista.com",
+            "anthonyli@arista.com"
+        ]
+    }
+}

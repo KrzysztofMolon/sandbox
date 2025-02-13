@@ -1,0 +1,109 @@
+postgres:
+  - name: barney-postgres-cluster
+    namespace: barney
+    labels: {}
+    ressources:
+      enabled: false
+
+  - name: barney-postgres-cluster-head
+    namespace: barney
+    labels: {}
+    ressources:
+      enabled: false
+
+cronjob:
+  - name: barney-postgres-cluster-cleanup
+    targetRevision: &cronjob_revision caabb9b7fbf4034216beee135967bc69fa0f8cb4
+    # schedule a normal vacuum every day at midnight UTC except on Sundays
+    schedule: "0 0 * * 1-6"
+    env:
+    - name: "POSTGRES_USER"
+      valueFrom:
+        secretKeyRef:
+          name: jobstats-owner-user.barney-postgres-cluster.credentials.postgresql.acid.zalan.do
+          key: username
+    - name: "POSTGRES_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          name: jobstats-owner-user.barney-postgres-cluster.credentials.postgresql.acid.zalan.do
+          key: password
+    - name: "POSTGRES_NAME"
+      value: "jobstats"
+    - name: "POSTGRES_HOST"
+      value: "barney-postgres-cluster.barney"
+    - name: "POSTGRES_PORT"
+      value: "5432"
+    - name: "POSTGRES_VACUUM_FULL"
+      value: "false"
+
+  - name: barney-postgres-cluster-full-cleanup
+    targetRevision: *cronjob_revision
+    # schedule a full vacuum every Sunday at 1 AM UTC
+    schedule: "0 0 * * 0"
+    env:
+    - name: "POSTGRES_USER"
+      valueFrom:
+        secretKeyRef:
+          name: jobstats-owner-user.barney-postgres-cluster.credentials.postgresql.acid.zalan.do
+          key: username
+    - name: "POSTGRES_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          name: jobstats-owner-user.barney-postgres-cluster.credentials.postgresql.acid.zalan.do
+          key: password
+    - name: "POSTGRES_NAME"
+      value: "jobstats"
+    - name: "POSTGRES_HOST"
+      value: "barney-postgres-cluster.barney"
+    - name: "POSTGRES_PORT"
+      value: "5432"
+    - name: "POSTGRES_VACUUM_FULL"
+      value: "true"
+
+  - name: barney-postgres-head-cluster-cleanup
+    targetRevision: HEAD
+    # schedule a normal vacuum every day at midnight UTC except on Sundays
+    schedule: "0 0 * * 1-6"
+    env:
+    - name: "POSTGRES_USER"
+      valueFrom:
+        secretKeyRef:
+          name: jobstatshead-owner-user.barney-postgres-cluster-head.credentials.postgresql.acid.zalan.do
+          key: username
+    - name: "POSTGRES_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          name: jobstatshead-owner-user.barney-postgres-cluster-head.credentials.postgresql.acid.zalan.do
+          key: password
+    - name: "POSTGRES_NAME"
+      value: "jobstatshead"
+    - name: "POSTGRES_HOST"
+      value: "barney-postgres-cluster-head.barney"
+    - name: "POSTGRES_PORT"
+      value: "5432"
+    - name: "POSTGRES_VACUUM_FULL"
+      value: "false"
+
+  - name: barney-postgres-head-cluster-full-cleanup
+    targetRevision: HEAD
+    # schedule a full vacuum every Sunday at 1 AM UTC
+    schedule: "0 0 * * 0"
+    env:
+    - name: "POSTGRES_USER"
+      valueFrom:
+        secretKeyRef:
+          name: jobstatshead-owner-user.barney-postgres-cluster-head.credentials.postgresql.acid.zalan.do
+          key: username
+    - name: "POSTGRES_PASSWORD"
+      valueFrom:
+        secretKeyRef:
+          name: jobstatshead-owner-user.barney-postgres-cluster-head.credentials.postgresql.acid.zalan.do
+          key: password
+    - name: "POSTGRES_NAME"
+      value: "jobstatshead"
+    - name: "POSTGRES_HOST"
+      value: "barney-postgres-cluster-head.barney"
+    - name: "POSTGRES_PORT"
+      value: "5432"
+    - name: "POSTGRES_VACUUM_FULL"
+      value: "true"

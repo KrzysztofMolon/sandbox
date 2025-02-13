@@ -1,0 +1,48 @@
+kafka:
+  cluster:
+    replicas: 5
+    service:
+      tcp_port: 9094
+      domain: example.com
+    resources: null
+  topics:
+    partitions: 4
+    replicas: 3
+zookeeper:
+  replicas: 3
+  resources: null
+topics:
+  - name: barney-topics
+    partitions: 64
+  - name: barney-topics-git
+    partitions: 64
+  - name: barney-job-details
+    partitions: 64
+    retention_ms: 3600000
+  - name: barney-top-level-jobs
+    partitions: 64
+    # use 7d retention, but limit the log to 1GB.
+    retention_bytes: 1000000000
+  - name: barney-job-debug
+    partitions: 64
+    retention_bytes: 1000000000
+  - name: barney-barnzilla-jobs
+  - name: gerrit
+  - name: github
+  - name: horseland-gerrit
+  - name: mut-kennel
+    partitions: 1
+  - name: barney-topics-head
+    partitions: 64
+  - name: barney-topics-git-head
+    partitions: 64
+  - name: barney-topics-wade
+  - name: barney-topics-git-wade
+
+podDisruptionBudget:
+  # Do not allow kubernetes to evict kafka pods by default
+  maxUnavailable: 0
+
+nodeAffinity: {}
+
+tolerations: []

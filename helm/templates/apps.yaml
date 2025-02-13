@@ -1,0 +1,46 @@
+{{- range $service, $values := $.Values.services }}
+{{- $disabled_by_values := ($values.values | default dict).disable }}
+{{- if not $disabled_by_values }}
+
+{{- range $.Values.clusters }}
+{{- $disabled_by_cluster := or (not (hasKey $values.clusters .)) ((index $values.clusters .).disable) }}
+{{- if not $disabled_by_cluster }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: '{{ $.Values.name }}-{{ $service }}-{{ . }}'
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: '{{ $.Values.name }}'
+  source:
+    {{- toYaml $values.source | nindent 4 }}
+    {{- if $values.clusterSource }}
+    {{- with (index $values.clusterSource .) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- end }}
+    helm:
+      {{- with $values.valueFiles }}
+      valueFiles:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      values: |-
+        fullnameOverride: '{{ $.Values.name }}-{{ $service }}'
+        {{- toYaml (mergeOverwrite (deepCopy (default dict $values.values)) (default (index $values.clusters .) dict ) ) | nindent 8 }}
+      {{- with $values.parameters }}
+      parameters:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+  destination:
+    namespace: '{{ $values.namespace | default $.Values.namespace }}'
+    name: '{{ . }}'
+  {{- with $values.syncPolicy }}
+  syncPolicy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

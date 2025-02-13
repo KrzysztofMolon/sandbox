@@ -1,0 +1,12 @@
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: bsy-headlike-minavailable
+  namespace: 'barney'
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      beta.kubernetes.io/arch: amd64
+      head-like: "true"

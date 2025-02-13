@@ -1,0 +1,10 @@
+apiVersion: v2
+name: barney
+description: |
+  The Barney ecosystem, managed by Argo.
+
+type: application
+
+version: 0.1.0
+
+appVersion: production

@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# Copyright (c) 2022 Arista Networks, Inc.	All rights reserved.
+# Arista Networks, Inc. Confidential and Proprietary.
+set -euo pipefail
+trap 'echo $0:$LINENO: exit $? >&2' ERR
+
+DOMAIN='infra.corp.arista.io'
+
+function debug () {
+	test -n "${DEBUG:-}"
+}
+
+function failed () {
+	printf 'failed: %s\n' "$*" >&2
+	exit 1
+}
+
+function fdclose () {
+	eval "exec ${1}<&-"
+}
+
+function _curl () {
+	local url="${@:$#}"
+	local ret=0
+	if debug ; then
+		printf '\n=> %s\n' "$url" >&2
+		exec {FD}> >(sed 's/^/(http) /g' >&2)
+	else
+		exec {FD}>/dev/null
+	fi
+	curl -sf -D "/dev/fd/$FD" "$@" || ret=$?
+	fdclose $FD
+	return $ret
+}
+
+function jsonout () {
+	_curl -H 'Content-Type: application/json' "$@"
+}
+
+function jsonin () {
+	_curl -H 'Accept: application/json' "$@"
+}
+
+function submit_job () {
+	local payload="$1"
+	if job=$(jsonout -d "$payload" "https://${BSY_HOST}/job" \
+					 | grep -Eom1 '"J[0-9a-f]{64}"' | cut -d'"' -f2) ; then
+		printf 'job %s submitted\n' "$job" >&2
+		printf '%s' "$job"
+	else
+		return 1
+	fi
+}
+
+function job_status () {
+	local job="$1"
+	local ret=0
+	if debug ; then
+		exec {FD}> >(jq . >&2)
+	else
+		exec {FD}>/dev/null
+	fi
+	jsonin -L "https://${BSY_HOST}/job/${job}/status" \
+		| tee "/dev/fd/$FD" | jq -r '.Status' || ret=$?
+	fdclose $FD
+	return $ret
+}
+
+function get_snapshot () {
+	_curl -L "https://${BSY_HOST}/job/${job}/snapshot" || return $?
+}
+
+function test_snapshot () {
+	file - | tee /dev/stderr | grep -Eq ': POSIX tar archive$' || return 1
+}
+
+case "${1:-}" in
+	"head")
+		BSY_HOST='bsy-head'
+		;;
+	"prod")
+		BSY_HOST='bsy'
+		;;
+	"host="*)
+		IFS='=' read _ BSY_HOST <<<"$1"
+		;;
+	"help"|"-h"|"--help")
+		nroff -man 'barneyping.1' | less
+		exit 0
+		;;
+	*)
+		printf 'Usage: [env DEBUG=1] %s ( head | prod | host=<host> | help )\n' "$0" >&2
+		exit 64  # EX_USAGE
+		;;
+esac
+
+BSY_HOST="${BSY_HOST}.${DOMAIN}"
+
+job_payload='
+{
+	"SnapshotSpec": "barney.ci/barney",
+	"Owners": ["barneyping"],
+	"Labels": {
+		"userAgent": "barney.ci/barney-ops/util/barneyping"
+	}
+}
+'
+
+job=$(submit_job "$job_payload") || failed "while submitting job"
+while :; do
+	sleep 1
+	jobstat=$(job_status "$job")
+	printf 'job %s %s\n' "$job" "$jobstat"
+	test "$jobstat" = "running" || break
+done
+test "$jobstat" = "passed" || failed "job disposition: $jobstat"
+get_snapshot "$job" | test_snapshot || failed "no shapshot yielded"
+
+echo 'OK!'

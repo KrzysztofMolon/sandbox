@@ -1,0 +1,25 @@
+# Deploy an external secret store pointing to arvault
+# in the barney namespace.
+# Note that this requires an access key secret to be
+# manually sourced under the name barney-arvault-access-key.
+# The barney-arvault-access-key should have one subkey
+# named secret-access-credentials that contains a json
+# credential document that was generated/downloaded from
+# GCP.
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: 'eso-barney-clustersecretstore-{{ $.Release.Namespace }}'
+  namespace: '{{ .Release.Namespace }}'
+spec:
+  conditions:
+    - namespaces:
+      - "{{ .Release.Namespace }}"
+      - "external-secrets-manager"
+  provider:
+    gcpsm:
+      auth:
+        secretRef:
+          {{- toYaml (default dict (default dict .Values.arvault).secretRef) | nindent 10 }}
+      projectID: arvault

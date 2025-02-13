@@ -1,0 +1,14 @@
+apiVersion: v2
+name: barney-postgres
+description: |
+  A postgres cluster for the Barney ecosystem.
+
+type: application
+
+version: 0.1.0
+
+appVersion: production
+
+dependencies:
+- name: prometheus-postgres-exporter
+  version: "4.1.0"
