@@ -19,6 +19,9 @@ jobs:
     - name: Show me the log
       run: git log
 
+    - name: Will it output anything?
+      run: ${{ github.event.before }}
+
     - name: Switch to previous commit
       run: git reset --hard HEAD~1
 
