@@ -2,7 +2,7 @@ name: Generate helm chart on push
 
 on:
   push:
-    branches: [ $default_branch ]
+    branches: [ main ]
 
 jobs:
   build:

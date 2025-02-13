@@ -2,7 +2,7 @@ name: Generate helm chart on pull request
 
 on:
   pull_request:
-    branches: [ $default_branch ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: $default_branch
+        ref: main
         path: main_HEAD
 
     - uses: actions/checkout@v4
