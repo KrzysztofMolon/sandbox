@@ -7,5 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    steps:
     - name: Commits
       run: echo ${{ github.event.commits }}
