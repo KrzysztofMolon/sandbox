@@ -1,0 +1,11 @@
+name: Generate helm chart on push
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    - name: Commits
+      run: echo ${{ github.event.commits }}
