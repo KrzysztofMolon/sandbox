@@ -12,15 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.before }}
+        path: main_HEAD
 
-    - name: Generate helm chart for current commit
-      run: helm template helm > current_chart.yaml
+    - uses: actions/checkout@v4
+      with:
+        path: PR_HEAD
 
-    - name: Checkout to HEAD of main branch
-      run: git checkout ${{ github.event.before }}
+    - name: Generate helm chart for main_HEAD
+      run: helm template main_HEAD/helm > main_HEAD_chart.yaml
 
-    - name: Generate helm chart for previous commit
-      run: helm template helm > previous_chart.yaml
+    - name: Generate helm chart for PR_HEAD
+      run: helm template PR_HEAD/helm > PR_HEAD_chart.yaml
 
     - name: Print the diff
-      run: diff previous_chart.yaml current_chart.yaml
+      run: diff main_HEAD_chart.yaml PR_HEAD_chart.yaml
