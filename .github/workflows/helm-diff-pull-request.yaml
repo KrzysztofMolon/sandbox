@@ -25,3 +25,6 @@ jobs:
 
     - name: Print the diff
       run: diff --unified=50 main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
+
+    - name: Get the commits
+      run: cd PR_HEAD && git log -1

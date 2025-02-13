@@ -1980,7 +1980,7 @@ services:
   bsy: &bsy_deploy
     source:
       repoURL: https://github.com/barney-ci/barney
-      targetRevision: a60f4317e8101eaf1db4d5ee649373daa6beb30b
+      targetRevision: HEAD
       path: helm/bsy
 
     # clusterSource extends "source" above with per-cluster parameters.
