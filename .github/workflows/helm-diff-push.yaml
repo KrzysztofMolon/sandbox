@@ -23,3 +23,12 @@ jobs:
 
     - name: Print the diff
       run: diff --unified=50 pre_push_chart.yaml post_push_chart.yaml || true
+
+    - name: Install dyff
+      run: |
+        sudo apt-get update
+        sudo apt install snapd
+        sudo snap install dyff
+
+    - name: Print the dyff
+      run: dyff between pre_push_chart.yaml post_push_chart.yaml || true

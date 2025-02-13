@@ -32,5 +32,5 @@ jobs:
         sudo apt install snapd
         sudo snap install dyff
 
-    - name: Do even dyff bro?
-      run: dyff --help
+    - name: Print the dyff
+      run: dyff between main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
