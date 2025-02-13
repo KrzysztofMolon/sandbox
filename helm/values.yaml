@@ -36,9 +36,6 @@ barnzilla-config: &barnzilla_config
         weight: 0
       podAnnotations:
         profiles.grafana.com/memory.scrape: "true"
-        profiles.grafana.com/cpu.scrape: "true"
-        profiles.grafana.com/goroutine.scrape: "true"
-        profiles.grafana.com/block.scrape: "true"
         profiles.grafana.com/mutex.scrape: "true"
       replicaCount: 2
       labels:
@@ -6361,9 +6358,6 @@ services:
     #This is needed as automation expects at least one cluster defined
     clusters:
       infra:
-        build-state-agent:
-          nodeSelector:
-            node-role.kubernetes.io/worker: worker
         desired-state-agent:
           nodeSelector:
             node-role.kubernetes.io/worker: worker
