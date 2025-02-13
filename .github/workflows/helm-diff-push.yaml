@@ -8,5 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Commits
-      run: echo ${{ github.event.commits }}
+    - name: Commit 0
+      run: echo ${{ github.event.commits[0] }}
+
+    - name: Commit 1
+      run: echo ${{ github.event.commits[1] }}
+
+    - name: Commit 2 
+      run: echo ${{ github.event.commits[2] }}
