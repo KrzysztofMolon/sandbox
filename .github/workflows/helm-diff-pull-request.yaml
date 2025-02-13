@@ -26,5 +26,10 @@ jobs:
     - name: Print the diff
       run: diff --unified=50 main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
 
+    - name: Install dyff
+      run: |
+        sudo apt-get update
+        sudo apt-get install dyff
+
     - name: Do even dyff bro?
       run: dyff --help
