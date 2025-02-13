@@ -1,13 +1,10 @@
 name: Generate helm chart
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -29,5 +26,8 @@ jobs:
     - name: Print the diff
       run: diff --unified=50 main_HEAD_chart.yaml PR_HEAD_chart.yaml || true
 
+on:
+  push:
+    branches: [ main ]
     - name: Commits
       run: echo ${{ github.event.commits }}
