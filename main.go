@@ -5,7 +5,7 @@ import "fmt"
 func main() {
 	charsPrinted, err := fmt.Println("Hello user!")
 	fmt.Println("Printed:", charsPrinted)
-	if err == nil {
+	if err != nil {
 		fmt.Println("Error:", err)
 	}
 }
