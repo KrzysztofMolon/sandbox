@@ -1,3 +1,9 @@
+## [v1.2.0] - 2025-02-17
+### Added
+Add missing go.mod
+Print ammount of printed characters
+Don't ignore errors from fmt.Println
+
 ## [v1.1.0] - 2025-02-16
 ### Added
 Add user greeting([#21](https://github.com/KrzysztofMolon/sandbox/pull/21), [#22](https://github.com/KrzysztofMolon/sandbox/pull/22))
